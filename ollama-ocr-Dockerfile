@@ -1,0 +1,9 @@
+FROM ollama/ollama:latest
+
+# default path of model store
+ENV OLLAMA_MODELS=/root/.ollama/models
+
+# Use Typhoon official ollama mode
+RUN nohup bash -c "ollama serve &" &&     sleep 5 &&     ollama pull scb10x/typhoon-ocr1.5-3b &&     pkill ollama
+
+ENTRYPOINT ["ollama", "serve"]

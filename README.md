@@ -1,0 +1,44 @@
+# Approach
+- Use model Typhoon OCR (VLM)
+    - VLM based lightweight model
+    - Support Thai
+    - Support pdf, png
+    - Layout, handwriting recognize
+    https://opentyphoon.ai/blog/en/typhoon-ocr-release
+- Use ollama image for model runtime
+    - CPU only support
+    - Typhoon officially support 
+- Expose API for text extracting
+- Add function 
+
+# Mocking Implementation
+
+## 1. Ollama + Typhoon Image
+
+## Build Image
+``` bash
+cat > ollama-ocr-Dockerfile <<EOF
+FROM ollama/ollama:latest
+
+# default path of model store
+ENV OLLAMA_MODELS=/root/.ollama/models
+
+# Use Typhoon official ollama mode
+RUN nohup bash -c "ollama serve &" && \
+    sleep 5 && \
+    ollama pull scb10x/typhoon-ocr1.5-3b && \
+    pkill ollama
+
+ENTRYPOINT ["ollama", "serve"]
+EOF
+```
+
+``` bash
+export IMAGE_TAG="quay.io/gunoh/edwin/typhoon-ocr-ollama:1.5-3b"
+
+# x86
+podman build --platform linux/amd64 -t $IMAGE_TAG -f ./ollama-ocr-Dockerfile
+
+podman login -u $(oc whoami) -p $(oc whoami -t) $(oc registry info)
+podman push $IMAGE_TAG
+```
