@@ -15,7 +15,7 @@
 
 ## 1. Ollama + Typhoon Image
 
-## Build Image
+## Dockerfile
 ``` bash
 cat > ollama-ocr-Dockerfile <<EOF
 FROM ollama/ollama:latest
@@ -32,7 +32,7 @@ RUN nohup bash -c "ollama serve &" && \
 ENTRYPOINT ["ollama", "serve"]
 EOF
 ```
-
+## Build image
 ``` bash
 export IMAGE_TAG="quay.io/gunoh/edwin/typhoon-ocr-ollama:1.5-3b"
 
@@ -41,4 +41,15 @@ podman build --platform linux/amd64 -t $IMAGE_TAG -f ./ollama-ocr-Dockerfile
 
 podman login -u $(oc whoami) -p $(oc whoami -t) $(oc registry info)
 podman push $IMAGE_TAG
+```
+
+## Test Image
+
+```
+podman run -d --name typhoon-test -p 11434:11434 typhoon-ollama:latest
+podman logs -f typhoon-test
+podman exec -it typhoon-test ollama list
+podman exec -it typhoon-test ollama run scb10x/typhoon-ocr1.5-3b "안녕, 너는 누구니?"
+podman stop typhoon-test
+podman rm typhoon-test
 ```
