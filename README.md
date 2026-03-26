@@ -53,3 +53,27 @@ podman exec -it typhoon-test ollama run scb10x/typhoon-ocr1.5-3b "안녕, 너는
 podman stop typhoon-test
 podman rm typhoon-test
 ```
+
+
+
+
+# Inferencing OCR
+
+## Dev Env
+```
+uv init
+uv add fastapi uvicorn python-multipart
+
+
+```
+
+## Test in local
+```
+uv run uvicorn src.ocr-mocking.main:app --reload --port 8000
+
+curl -X POST http://localhost:8000/ocr \
+  -F "file=@Marriage Cert.pdf" \
+  -F "file_id=doc-001" \
+  -F "file_type=pdf" \
+  -F "document_type=certificate"
+```
